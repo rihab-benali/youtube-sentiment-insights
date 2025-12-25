@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const outputDiv = document.getElementById("output");
   const API_KEY = 'AIzaSyA3XbVLum8xDvI3Fjxq9fH4McG1MXQYNeo';  //youtube api key generated grom google cloud console
   // const API_URL = 'http://my-elb-2062136355.us-east-1.elb.amazonaws.com:80';   
-   const API_URL = 'http://localhost:5000/';
-  //const API_URL = 'http://23.20.221.231:8080/';
+   //const API_URL = 'http://localhost:5000/';
+  const API_URL = 'http://13.60.227.127:8080/';
 
   // Get the current tab's URL
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
