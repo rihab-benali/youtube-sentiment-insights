@@ -23,3 +23,13 @@
     ##AWS
 
     aws configure
+
+
+
+
+
+
+    mlproject URI from ecr:
+
+
+    847834418950.dkr.ecr.eu-north-1.amazonaws.com/mlproject
