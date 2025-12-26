@@ -21,6 +21,8 @@ COPY requirements.txt .
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
+RUN python -m nltk.downloader stopwords wordnet omw-1.4
+
 # Copy application code
 COPY . .
 
