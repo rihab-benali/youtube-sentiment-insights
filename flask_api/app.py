@@ -90,38 +90,44 @@ def home():
     return "Welcome to our flask api"
 
 
-
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
     comments = data.get('comments')
-    print("i am the comment: ",comments)
-    print("i am the comment type: ",type(comments))
-    
+
     if not comments:
         return jsonify({"error": "No comments provided"}), 400
 
     try:
-        # Preprocess each comment before vectorizing
-        preprocessed_comments = [preprocess_comment(comment) for comment in comments]
-        
-        # Transform comments using the vectorizer
+        # Preprocess comments
+        preprocessed_comments = [
+            preprocess_comment(comment) for comment in comments
+        ]
+
+        # Vectorize
         transformed_comments = vectorizer.transform(preprocessed_comments)
 
-        # Convert the sparse matrix to dense format
-        dense_comments = transformed_comments.toarray()  # Convert to dense array
-        
-        # Make predictions
-        predictions = model.predict(dense_comments).tolist()  # Convert to list
-        
-        # Convert predictions to strings for consistency
-        # predictions = [str(pred) for pred in predictions]
+        # 🔑 Convert to DataFrame with feature names
+        feature_names = vectorizer.get_feature_names_out()
+        X = pd.DataFrame(
+            transformed_comments.toarray(),
+            columns=feature_names
+        )
+
+        # Predict
+        predictions = model.predict(X).tolist()
+
     except Exception as e:
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
-    
-    # Return the response with original comments and predicted sentiments
-    response = [{"comment": comment, "sentiment": sentiment} for comment, sentiment in zip(comments, predictions)]
+
+    # Build response
+    response = [
+        {"comment": comment, "sentiment": sentiment}
+        for comment, sentiment in zip(comments, predictions)
+    ]
+
     return jsonify(response)
+
 
 
 
@@ -129,42 +135,58 @@ def predict():
 
 
 
-################################################################################################################################
 @app.route('/predict_with_timestamps', methods=['POST'])
 def predict_with_timestamps():
     data = request.json
     comments_data = data.get('comments')
-    
+
     if not comments_data:
         return jsonify({"error": "No comments provided"}), 400
 
     try:
+        # Extract comments and timestamps
         comments = [item['text'] for item in comments_data]
         timestamps = [item['timestamp'] for item in comments_data]
 
-        # Preprocess each comment before vectorizing
-        preprocessed_comments = [preprocess_comment(comment) for comment in comments]
-        
-        # Transform comments using the vectorizer
+        # Preprocess comments
+        preprocessed_comments = [
+            preprocess_comment(comment) for comment in comments
+        ]
+
+        # Vectorize comments
         transformed_comments = vectorizer.transform(preprocessed_comments)
 
-        # Convert the sparse matrix to dense format
-        dense_comments = transformed_comments.toarray()  # Convert to dense array
-        
-        # Make predictions
-        predictions = model.predict(dense_comments).tolist()  # Convert to list
-        
-        # Convert predictions to strings for consistency
+        # 🔑 Convert to DataFrame with feature names
+        feature_names = vectorizer.get_feature_names_out()
+        X = pd.DataFrame(
+            transformed_comments.toarray(),
+            columns=feature_names
+        )
+
+        # Predict
+        predictions = model.predict(X).tolist()
+
+        # Optional: stringify predictions
         predictions = [str(pred) for pred in predictions]
+
     except Exception as e:
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
-    
-    # Return the response with original comments, predicted sentiments, and timestamps
-    response = [{"comment": comment, "sentiment": sentiment, "timestamp": timestamp} for comment, sentiment, timestamp in zip(comments, predictions, timestamps)]
+
+    # Build response
+    response = [
+        {
+            "comment": comment,
+            "sentiment": sentiment,
+            "timestamp": timestamp
+        }
+        for comment, sentiment, timestamp in zip(comments, predictions, timestamps)
+    ]
+
     return jsonify(response)
 
 
 
+################################################################################################################################
 @app.route('/generate_chart', methods=['POST'])
 def generate_chart():
     try:

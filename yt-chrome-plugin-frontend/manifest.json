@@ -6,11 +6,19 @@
   "action": {
     "default_popup": "popup.html"
   },
+ 
   "permissions": [
     "tabs",
     "activeTab",
-    "scripting",
-    "http://localhost/*",
-    "https://www.googleapis.com/*"
-  ]
+    "scripting"
+    
+
+  ],
+  "host_permissions": [
+  
+  "http://13.60.227.127:8080/*",
+  "https://www.googleapis.com/*"
+
+  
+]
 }
